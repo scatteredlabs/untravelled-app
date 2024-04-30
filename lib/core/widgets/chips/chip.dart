@@ -1,0 +1,381 @@
+import 'package:flutter/material.dart';
+
+import 'package:untravelled_app/core/theme/chip/chip_size_properties.dart';
+import 'package:untravelled_app/core/theme/chip/chip_sizes.dart';
+import 'package:untravelled_app/core/theme/effects/effects_theme.dart';
+import 'package:untravelled_app/core/theme/theme.dart';
+import 'package:untravelled_app/core/theme/tokens/borders.dart';
+import 'package:untravelled_app/core/theme/tokens/colors.dart';
+import 'package:untravelled_app/core/theme/tokens/tokens.dart';
+import 'package:untravelled_app/core/utils/color_tween_premul.dart';
+import 'package:untravelled_app/core/utils/extensions.dart';
+import 'package:untravelled_app/core/utils/squircle/squircle_border.dart';
+import 'package:untravelled_app/core/widgets/common/base_control.dart';
+
+enum UntravelledChipSize {
+  sm,
+  md,
+}
+
+class UntravelledChip extends StatefulWidget {
+  /// {@macro flutter.widgets.Focus.autofocus}
+  final bool autofocus;
+
+  /// Whether the chip should be focusable.
+  final bool isFocusable;
+
+  /// Whether this chip should ensure that it has a minimal touch target size.
+  final bool ensureMinimalTouchTargetSize;
+
+  /// Whether the chip is active/selected.
+  final bool isActive;
+
+  /// Whether the chip should show a border.
+  final bool showBorder;
+
+  /// Whether the chip should show a focus effect.
+  final bool showFocusEffect;
+
+  /// The border radius of the chip.
+  final BorderRadiusGeometry? borderRadius;
+
+  /// The border and text color of the chip when active.
+  final Color? activeColor;
+
+  /// The background color of the chip.
+  final Color? backgroundColor;
+
+  /// The background color of the chip when active.
+  final Color? activeBackgroundColor;
+
+  /// The border color of the  chip.
+  final Color? borderColor;
+
+  /// The color of the focus effect.
+  final Color? focusEffectColor;
+
+  /// The text color of the chip.
+  final Color? textColor;
+
+  /// The border width of the chip.
+  final double? borderWidth;
+
+  /// The opacity value of the chip when it is disabled.
+  final double? disabledOpacityValue;
+
+  /// The extent of the focus effect.
+  final double? focusEffectExtent;
+
+  /// The gap between the leading or trailing and the label widgets.
+  final double? gap;
+
+  /// The height of the chip.
+  final double? height;
+
+  /// The width of the chip.
+  final double? width;
+
+  /// The minimum size of the touch target.
+  final double minTouchTargetSize;
+
+  /// The duration of the active effect.
+  final Duration? activeEffectDuration;
+
+  /// The duration of the focus effect.
+  final Duration? focusEffectDuration;
+
+  /// The curve of the hover effect.
+  final Curve? activeEffectCurve;
+
+  /// The curve of the focus effect.
+  final Curve? focusEffectCurve;
+
+  /// The padding of the chip.
+  final EdgeInsetsGeometry? padding;
+
+  /// {@macro flutter.widgets.Focus.focusNode}.
+  final FocusNode? focusNode;
+
+  /// The size of the chip.
+  final UntravelledChipSize? chipSize;
+
+  /// Custom decoration for the chip.
+  final Decoration? decoration;
+
+  /// The semantic label for the chip.
+  final String? semanticLabel;
+
+  /// The callback that is called when the chip is tapped or pressed.
+  final VoidCallback? onTap;
+
+  /// The callback that is called when the chip is long-pressed.
+  final VoidCallback? onLongPress;
+
+  /// The widget in the leading slot of the chip.
+  final Widget? leading;
+
+  /// The widget in the label slot of the chip.
+  final Widget? label;
+
+  /// The widget in the trailing slot of the chip.
+  final Widget? trailing;
+
+  /// MDS chip widget
+  const UntravelledChip({
+    super.key,
+    this.autofocus = false,
+    this.isFocusable = true,
+    this.ensureMinimalTouchTargetSize = false,
+    this.isActive = false,
+    this.showBorder = false,
+    this.showFocusEffect = true,
+    this.borderRadius,
+    this.activeColor,
+    this.backgroundColor,
+    this.activeBackgroundColor,
+    this.borderColor,
+    this.focusEffectColor,
+    this.textColor,
+    this.borderWidth,
+    this.disabledOpacityValue,
+    this.focusEffectExtent,
+    this.gap,
+    this.height,
+    this.width,
+    this.minTouchTargetSize = 40,
+    this.activeEffectDuration,
+    this.focusEffectDuration,
+    this.activeEffectCurve,
+    this.focusEffectCurve,
+    this.padding,
+    this.focusNode,
+    this.chipSize,
+    this.decoration,
+    this.semanticLabel,
+    this.onTap,
+    this.onLongPress,
+    this.label,
+    this.leading,
+    this.trailing,
+  });
+
+  /// MDS chip widget text variant
+  const UntravelledChip.text({
+    super.key,
+    this.autofocus = false,
+    this.isFocusable = true,
+    this.ensureMinimalTouchTargetSize = false,
+    this.isActive = false,
+    this.showBorder = false,
+    this.showFocusEffect = true,
+    this.borderRadius,
+    this.activeColor,
+    this.activeBackgroundColor,
+    this.borderColor,
+    this.focusEffectColor,
+    this.textColor,
+    this.borderWidth,
+    this.disabledOpacityValue,
+    this.focusEffectExtent,
+    this.gap,
+    this.height,
+    this.width,
+    this.minTouchTargetSize = 40,
+    this.focusEffectDuration,
+    this.activeEffectDuration,
+    this.focusEffectCurve,
+    this.activeEffectCurve,
+    this.padding,
+    this.focusNode,
+    this.chipSize,
+    this.decoration,
+    this.semanticLabel,
+    this.onTap,
+    this.onLongPress,
+    this.label,
+    this.leading,
+    this.trailing,
+  }) : backgroundColor = Colors.transparent;
+
+  @override
+  State<UntravelledChip> createState() => _UntravelledChipState();
+}
+
+class _UntravelledChipState extends State<UntravelledChip> with SingleTickerProviderStateMixin {
+  final ColorTweenWithPremultipliedAlpha _backgroundColorTween = ColorTweenWithPremultipliedAlpha();
+  final ColorTweenWithPremultipliedAlpha _borderColorTween = ColorTweenWithPremultipliedAlpha();
+  final ColorTweenWithPremultipliedAlpha _textColorTween = ColorTweenWithPremultipliedAlpha();
+
+  Animation<Color?>? _backgroundColor;
+  Animation<Color?>? _borderColor;
+  Animation<Color?>? _textColor;
+
+  AnimationController? _animationController;
+
+  void _handleActiveEffect(bool shouldAnimate) {
+    shouldAnimate ? _animationController?.forward() : _animationController?.reverse();
+  }
+
+  UntravelledChipSizeProperties _getUntravelledChipSize(BuildContext context, UntravelledChipSize? untravelledChipSize) {
+    switch (untravelledChipSize) {
+      case UntravelledChipSize.sm:
+        return context.untravelledTheme?.chipTheme.sizes.sm ?? UntravelledChipSizes(tokens: UntravelledTokens.light).sm;
+      case UntravelledChipSize.md:
+        return context.untravelledTheme?.chipTheme.sizes.md ?? UntravelledChipSizes(tokens: UntravelledTokens.light).md;
+      default:
+        return context.untravelledTheme?.chipTheme.sizes.md ?? UntravelledChipSizes(tokens: UntravelledTokens.light).md;
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController?.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final UntravelledChipSizeProperties effectiveUntravelledChipSize = _getUntravelledChipSize(context, widget.chipSize);
+
+    final BorderRadiusGeometry effectiveBorderRadius = widget.borderRadius ?? effectiveUntravelledChipSize.borderRadius;
+
+    final double effectiveBorderWidth =
+        widget.borderWidth ?? context.untravelledBorders?.defaultBorderWidth ?? UntravelledBorders.borders.defaultBorderWidth;
+
+    final double effectiveHeight = widget.height ?? effectiveUntravelledChipSize.height;
+
+    final double effectiveGap = widget.gap ?? effectiveUntravelledChipSize.gap;
+
+    final Color effectiveActiveColor =
+        widget.activeColor ?? context.untravelledTheme?.chipTheme.colors.activeColor ?? UntravelledColors.light.piccolo;
+
+    final Color effectiveBackgroundColor =
+        widget.backgroundColor ?? context.untravelledTheme?.chipTheme.colors.backgroundColor ?? UntravelledColors.light.gohan;
+
+    final Color effectiveActiveBackgroundColor = widget.activeBackgroundColor ??
+        context.untravelledTheme?.chipTheme.colors.activeBackgroundColor ??
+        UntravelledColors.light.jiren;
+
+    final Color effectiveTextColor =
+        widget.textColor ?? context.untravelledTheme?.chipTheme.colors.textColor ?? UntravelledColors.light.textPrimary;
+
+    final Duration effectiveActiveEffectDuration = widget.activeEffectDuration ??
+        context.untravelledEffects?.controlHoverEffect.hoverDuration ??
+        UntravelledEffectsTheme(tokens: UntravelledTokens.light).controlHoverEffect.hoverDuration;
+
+    final Curve effectiveActiveEffectCurve = widget.activeEffectCurve ??
+        context.untravelledEffects?.controlHoverEffect.hoverCurve ??
+        UntravelledEffectsTheme(tokens: UntravelledTokens.light).controlHoverEffect.hoverCurve;
+
+    final EdgeInsetsGeometry effectivePadding = widget.padding ?? effectiveUntravelledChipSize.padding;
+
+    final EdgeInsets resolvedDirectionalPadding = effectivePadding.resolve(Directionality.of(context));
+
+    final EdgeInsetsGeometry correctedPadding = widget.padding == null
+        ? EdgeInsetsDirectional.fromSTEB(
+            widget.leading == null && widget.label != null ? resolvedDirectionalPadding.left : 0,
+            resolvedDirectionalPadding.top,
+            widget.trailing == null && widget.label != null ? resolvedDirectionalPadding.right : 0,
+            resolvedDirectionalPadding.bottom,
+          )
+        : resolvedDirectionalPadding;
+
+    _animationController ??= AnimationController(duration: effectiveActiveEffectDuration, vsync: this);
+
+    _backgroundColor ??=
+        _animationController!.drive(_backgroundColorTween.chain(CurveTween(curve: effectiveActiveEffectCurve)));
+
+    _borderColor ??=
+        _animationController!.drive(_borderColorTween.chain(CurveTween(curve: effectiveActiveEffectCurve)));
+
+    _textColor ??= _animationController!.drive(_textColorTween.chain(CurveTween(curve: effectiveActiveEffectCurve)));
+
+    _backgroundColorTween
+      ..begin = effectiveBackgroundColor
+      ..end = effectiveActiveBackgroundColor;
+
+    _borderColorTween
+      ..begin = Colors.transparent
+      ..end = widget.borderColor ?? effectiveActiveColor;
+
+    _textColorTween
+      ..begin = effectiveTextColor
+      ..end = effectiveActiveColor;
+
+    return UntravelledBaseControl(
+      autofocus: widget.autofocus,
+      isFocusable: widget.isFocusable,
+      ensureMinimalTouchTargetSize: widget.ensureMinimalTouchTargetSize,
+      showFocusEffect: widget.showFocusEffect,
+      borderRadius: effectiveBorderRadius,
+      backgroundColor: widget.backgroundColor,
+      focusEffectColor: widget.focusEffectColor,
+      disabledOpacityValue: widget.disabledOpacityValue,
+      minTouchTargetSize: widget.minTouchTargetSize,
+      focusEffectExtent: widget.focusEffectExtent,
+      focusEffectDuration: widget.focusEffectDuration,
+      focusEffectCurve: widget.focusEffectCurve,
+      focusNode: widget.focusNode,
+      semanticLabel: widget.semanticLabel,
+      onTap: widget.onTap ?? () {},
+      onLongPress: widget.onLongPress,
+      builder: (BuildContext context, bool isEnabled, bool isHovered, bool isFocused, bool isPressed) {
+        final bool canAnimate = widget.isActive || isHovered || isFocused;
+
+        _handleActiveEffect(canAnimate);
+
+        return AnimatedBuilder(
+          animation: _animationController!,
+          builder: (BuildContext context, Widget? child) {
+            return IconTheme(
+              data: IconThemeData(
+                color: _textColor!.value,
+                size: effectiveUntravelledChipSize.iconSizeValue,
+              ),
+              child: DefaultTextStyle(
+                style: effectiveUntravelledChipSize.textStyle.copyWith(color: _textColor!.value),
+                child: Container(
+                  width: widget.width,
+                  height: effectiveHeight,
+                  padding: correctedPadding,
+                  constraints: BoxConstraints(minWidth: effectiveHeight),
+                  decoration: widget.decoration ??
+                      ShapeDecoration(
+                        color: _backgroundColor!.value,
+                        shape: UntravelledSquircleBorder(
+                          borderRadius: effectiveBorderRadius.squircleBorderRadius(context),
+                          side: BorderSide(
+                            color: widget.showBorder ? _borderColor!.value! : Colors.transparent,
+                            width: widget.showBorder ? effectiveBorderWidth : 0,
+                            style: widget.showBorder ? BorderStyle.solid : BorderStyle.none,
+                          ),
+                        ),
+                      ),
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (widget.leading != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: effectiveGap),
+                  child: widget.leading,
+                ),
+              if (widget.label != null) widget.label!,
+              if (widget.trailing != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: effectiveGap),
+                  child: widget.trailing,
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
